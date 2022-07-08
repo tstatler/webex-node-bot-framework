@@ -1,4 +1,32 @@
-'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: framework.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: framework.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
 var EventEmitter = require('events').EventEmitter;
 EventEmitter.prototype._maxListeners = 0;
@@ -109,7 +137,7 @@ function Framework(options) {
   this.options.removeDeviceRegistrationsOnStart = typeof this.options.removeDeviceRegistrationsOnStart === 'boolean' ? this.options.removeWebhooksOnStart : false;
   
   // define default messageFormat used with bot.say (if not defined, defaults to 'text')
-  if (typeof this.options.messageFormat === 'string' && _.includes(['text', 'markdown', 'html'], _.toLower(this.options.messageFormat))) {
+  if (typeof this.options.messageFormat === 'string' &amp;&amp; _.includes(['text', 'markdown', 'html'], _.toLower(this.options.messageFormat))) {
     this.messageFormat = _.toLower(this.options.messageFormat);
   } else {
     this.messageFormat = 'text';
@@ -128,7 +156,7 @@ function Framework(options) {
   this.initBotStorageData = (typeof options.initBotStorageData === 'object') ? options.initBotStorageData : {};
 
   // Check how many spaces to discover upon startup
-  if ((typeof options.maxStartupSpaces === 'number') && (options.maxStartupSpaces >= 0)) {
+  if ((typeof options.maxStartupSpaces === 'number') &amp;&amp; (options.maxStartupSpaces >= 0)) {
     this.maxStartupSpaces = options.maxStartupSpaces;
   } else if (options.hasOwnProperty('maxStartupSpaces')) {
     console.error(`Invalid configuration option for "maxStartupSpaces": "${options.maxStartupSpaces}". ` +
@@ -198,7 +226,7 @@ Framework.prototype.debug = function (message) {
  * @function
  * @memberof Framework
  * @param {String} token - New Webex Token for Framework to use.
- * @returns {Promise.<String>}
+ * @returns {Promise.&lt;String>}
  *
  * @example
  * framework.setWebexToken('Tm90aGluZyB0byBzZWUgaGVyZS4uLiBNb3ZlIGFsb25nLi4u')
@@ -224,7 +252,7 @@ Framework.prototype.setWebexToken = function (token) {
  * @memberof Framework
  * @private
  * @param {String} token - Test if Token is valid by attempting a simple Webex API Call.
- * @returns {Promise.<String>}
+ * @returns {Promise.&lt;String>}
  *
  * @example
  * framework.testWebexToken('Tm90aGluZyB0byBzZWUgaGVyZS4uLiBNb3ZlIGFsb25nLi4u')
@@ -278,7 +306,7 @@ Framework.prototype.getWebexSDK = function () {
  *
  * @function
  * @memberof Framework
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  *
  * @example
  * framework.stop();
@@ -324,7 +352,7 @@ Framework.prototype.stop = function () {
  *
  * @function
  * @memberof Framework
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  *
  * @example
  * framework.start();
@@ -401,7 +429,7 @@ Framework.prototype.start = function () {
                   return (webhook.name == u.base64encode(this.options.webhookUrl.split('/')[2] + ' ' + this.email));
                 });
 
-                if (webhooksToRemove instanceof Array && webhooksToRemove.length > 0) {
+                if (webhooksToRemove instanceof Array &amp;&amp; webhooksToRemove.length > 0) {
                   return when.map(webhooksToRemove, webhook => this.webex.webhooks.remove(webhook));
                 } else {
                   return when(true);
@@ -479,7 +507,7 @@ Framework.prototype.start = function () {
  * @function
  * @memberof Framework
  * @private
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  *
  * @example
  * framework.initialize();
@@ -488,7 +516,7 @@ Framework.prototype.initialize = function () {
   // spawn bots in existing rooms at startup
   if (this.maxStartupSpaces != 0) {
     var batchSize = 1000;  // max payload for list memberships
-    if ((this.hasOwnProperty('maxStartupSpaces')) && (this.maxStartupSpaces < 1000)) {
+    if ((this.hasOwnProperty('maxStartupSpaces')) &amp;&amp; (this.maxStartupSpaces &lt; 1000)) {
       batchSize = this.maxStartupSpaces;
     }
 
@@ -499,7 +527,7 @@ Framework.prototype.initialize = function () {
 
         return (async function f(page) {
           let memberships = page.items;
-          if ((self.hasOwnProperty('maxStartupSpaces')) &&
+          if ((self.hasOwnProperty('maxStartupSpaces')) &amp;&amp;
             (spawn_promises.length + memberships.length > self.maxStartupSpaces)) {
             // remove any extras beyond what we need to reach maxStartupSpaces
             memberships.splice(
@@ -511,7 +539,7 @@ Framework.prototype.initialize = function () {
             return () => self.spawn(m);
           }));
 
-          if ((page.hasNext()) && (spawn_promises.length < self.maxStartupSpaces)) {
+          if ((page.hasNext()) &amp;&amp; (spawn_promises.length &lt; self.maxStartupSpaces)) {
             // We got a paginated response and need to get another batch...
             return page.next().then(f);
           }
@@ -548,7 +576,7 @@ Framework.prototype.initialize = function () {
  *
  * @function
  * @memberof Framework
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  *
  * @example
  * framework.restart();
@@ -572,7 +600,7 @@ Framework.prototype.restart = function () {
  * @memberof Framework
  * @private
  * @param {Object} message - Message Object
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  */
 Framework.prototype.parseMessage = function (message) {
 
@@ -627,7 +655,7 @@ Framework.prototype.parseMessage = function (message) {
  * @private
  * @param {Object} message - Enhanced message object (with additional sender info)
 // * @param {Webhook} messageData - Webhook object from message created webhook
- * @returns {Promise.<Trigger>}
+ * @returns {Promise.&lt;Trigger>}
  */
 Framework.prototype.getTrigger = function (type, triggerObject) {
 
@@ -685,7 +713,7 @@ Framework.prototype.getTrigger = function (type, triggerObject) {
  * @memberof Framework
  * @private
  * @param {String} personEmail - Person Email of Webex Account
- * @returns {Promise.<Person>}
+ * @returns {Promise.&lt;Person>}
  */
 Framework.prototype.getPersonByEmail = function (personEmail) {
   return this.webex.people.list({email: personEmail})
@@ -887,7 +915,7 @@ Framework.prototype.onMembershipCreated = function (membership, actorId) {
   var bot = this.findBotObjectInRoom(membership.roomId);
 
   if (!bot) {
-    if (this.initialized && membership.personId === this.person.id) {
+    if (this.initialized &amp;&amp; membership.personId === this.person.id) {
       // if bot membership added to un-monitored room...
       return this.spawn(membership, actorId);
     } else {
@@ -918,7 +946,7 @@ Framework.prototype.onMembershipCreated = function (membership, actorId) {
 
   // else if other membership added to monitored room...
   else {
-    if (!(("membershipRules" in this) && 
+    if (!(("membershipRules" in this) &amp;&amp; 
       (!this.membershipRules.isNewMemberAllowed(bot, actorId, membership)))) {
       // new member does not violate membership rules
       bot.lastActivity = moment().utc().format();
@@ -977,7 +1005,7 @@ Framework.prototype.onMembershipUpdated = function (membership) {
   bot.lastActivity = moment().utc().format();
 
   // if bot's membership updated in monitored room
-  if (bot && membership.personId === bot.person.id) {
+  if (bot &amp;&amp; membership.personId === bot.person.id) {
     let oldModeratorStatus = bot.isModerator;
     // update bot membership
     bot.membership = membership;
@@ -1007,7 +1035,7 @@ Framework.prototype.onMembershipUpdated = function (membership) {
     }
   }
   // else if other membership updated in monitored room
-  else if (bot && this.initialized) {
+  else if (bot &amp;&amp; this.initialized) {
     // A slight inefficiency here is that we notify about moderator
     // status on EVERY membership change even if something else changed
     // This rarely (never?) happens and seems worth the cost savings
@@ -1072,7 +1100,7 @@ Framework.prototype.onMembershipDeleted = function (membership, actorId) {
       this.emitBoth('memberExits', bot, membership);
 
       // Check if this memember leaving changed membership rules status of bot
-      //      if (!(("membershipRules" in this) && (!this.membershipRules.isAllowedAfterMemberLeaves(bot, membership)))) {
+      //      if (!(("membershipRules" in this) &amp;&amp; (!this.membershipRules.isAllowedAfterMemberLeaves(bot, membership)))) {
       if ("membershipRules" in this) {
         return this.membershipRules.isAllowedAfterMemberLeaves(bot, actorId, membership)
           .then(botIsActive => {
@@ -1164,7 +1192,7 @@ Framework.prototype.onMessageCreated = function (message) {
 
           _.forEach(matched, lex => {
             // for regex
-            if (lex.phrase instanceof RegExp && typeof lex.action === 'function') {
+            if (lex.phrase instanceof RegExp &amp;&amp; typeof lex.action === 'function') {
               // define trigger.args, trigger.phrase
               trigger.args = trigger.text.split(' ');
               trigger.phrase = lex.phrase;
@@ -1178,7 +1206,7 @@ Framework.prototype.onMessageCreated = function (message) {
             }
 
             // for string
-            else if (typeof lex.phrase === 'string' && typeof lex.action === 'function') {
+            else if (typeof lex.phrase === 'string' &amp;&amp; typeof lex.action === 'function') {
               // find index of match
               var args = _.toLower(trigger.text).split(' ');
               var indexOfMatch = args.indexOf(lex.phrase) !== -1 ? args.indexOf(lex.phrase) : 0;
@@ -1204,7 +1232,7 @@ Framework.prototype.onMessageCreated = function (message) {
         }
 
         // if mentioned
-        if (trigger.message.mentionedPeople && _.includes(trigger.message.mentionedPeople, this.person.id)) {
+        if (trigger.message.mentionedPeople &amp;&amp; _.includes(trigger.message.mentionedPeople, this.person.id)) {
 
           trigger.args = trigger.text.split(' ');
 
@@ -1255,17 +1283,17 @@ Framework.prototype.onMessageCreated = function (message) {
           var matched = _.filter(this.lexicon, lex => {
 
             // if lex.phrase is regex
-            if (lex.phrase && lex.phrase instanceof RegExp && lex.phrase.test(trigger.text)) {
+            if (lex.phrase &amp;&amp; lex.phrase instanceof RegExp &amp;&amp; lex.phrase.test(trigger.text)) {
               return true;
             }
 
             // if lex.phrase is string and this is NOT a bot account
-            else if (!this.isBotAccount && lex.phrase && typeof lex.phrase === 'string' && lex.phrase === _.toLower(trigger.text).split(' ')[0]) {
+            else if (!this.isBotAccount &amp;&amp; lex.phrase &amp;&amp; typeof lex.phrase === 'string' &amp;&amp; lex.phrase === _.toLower(trigger.text).split(' ')[0]) {
               return true;
             }
 
             // if lex.phrase is string and this is a bot account
-            else if (this.isBotAccount && lex.phrase && typeof lex.phrase === 'string') {
+            else if (this.isBotAccount &amp;&amp; lex.phrase &amp;&amp; typeof lex.phrase === 'string') {
               var regexPhrase = new RegExp('(^| )' + lex.phrase.replace(/([\.\^\$\*\+\?\(\)\[\{\\\|])/g, '\\$1') + '($| )', 'i');
               return (regexPhrase.test(trigger.text));
             }
@@ -1281,7 +1309,7 @@ Framework.prototype.onMessageCreated = function (message) {
         }
 
         // if matched
-        if (matched.length && typeof this.authorize === 'function') {
+        if (matched.length &amp;&amp; typeof this.authorize === 'function') {
           // if authorization function exists...
           return when(this.authorize(bot, trigger, this.id))
             .then(authorized => {
@@ -1392,7 +1420,7 @@ Framework.prototype.onAttachmentActions = function (attachmentAction) {
  * @private
  * @param {Object} Membership of bot in room
  * @param {String} [actorId] actorId associated with a membership:created event if available
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  * 
  */
 Framework.prototype.spawn = function (membership, actorId) {
@@ -1403,7 +1431,7 @@ Framework.prototype.spawn = function (membership, actorId) {
   }
 
   // validate params
-  if ((typeof membership !== 'object') && (typeof membership.roomId !== 'string')) {
+  if ((typeof membership !== 'object') &amp;&amp; (typeof membership.roomId !== 'string')) {
     this.debug('A bot for account "%s" could not spawn as membership room id not valid', this.email);
     return when(false);
   }
@@ -1447,7 +1475,7 @@ Framework.prototype.spawn = function (membership, actorId) {
       newBot.isGroup = (room.type === 'group');
       newBot.isLocked = room.isLocked;
 
-      if (newBot.room.teamId && ('string' === typeof newBot.room.teamId))
+      if (newBot.room.teamId &amp;&amp; ('string' === typeof newBot.room.teamId))
       {
         newBot.isTeam = true;
       }
@@ -1542,7 +1570,7 @@ Framework.prototype.spawn = function (membership, actorId) {
        *      framework.debug(`Framework spawned a bot object in existing
        *         space: ${bot.room.title}`);
        *   } else {
-       *     if ((bot.room.type === 'group') && (addedById)) {
+       *     if ((bot.room.type === 'group') &amp;&amp; (addedById)) {
        *       // In this example we imagine our bot is only allowed in 1-1 spaces
        *       // our bot creates a 1-1 with the addedBy user, and leaves the group space
        *       bot.dm(addedById, `I see you added me to the the space "${bot.room.title}", ` +
@@ -1584,7 +1612,7 @@ Framework.prototype.spawn = function (membership, actorId) {
  * @private
  * @param {String} Room ID - The ID for a Webex Teams Space.
  * @param {String} actorId - Webex Team Membership Created event actorId
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  */
 Framework.prototype.despawn = function (roomId, actorId) {
   var bot = this.findBotObjectInRoom(roomId);
@@ -1644,7 +1672,7 @@ Framework.prototype.despawn = function (roomId, actorId) {
  * // using a string to match first word and defines help text
  * framework.hears('/say', function(bot, trigger, id) {
  *   bot.say(trigger.args.slice(1, trigger.arges.length - 1));
- * }, '/say <greeting> - Responds with a greeting');
+ * }, '/say &lt;greeting> - Responds with a greeting');
  *
  * @example
  * // using regex to match across entire message
@@ -1657,18 +1685,18 @@ Framework.prototype.hears = function (phrase, action, helpText, preference) {
 
   // parse function args
   var args = Array.prototype.slice.call(arguments);
-  phrase = args.length > 0 && (typeof args[0] === 'string' || args[0] instanceof RegExp) ? args.shift() : null;
-  action = args.length > 0 && typeof args[0] === 'function' ? args.shift() : null;
-  helpText = args.length > 0 && typeof args[0] === 'string' ? args.shift() : null;
-  preference = args.length > 0 && typeof args[0] === 'number' ? args.shift() : 0;
+  phrase = args.length > 0 &amp;&amp; (typeof args[0] === 'string' || args[0] instanceof RegExp) ? args.shift() : null;
+  action = args.length > 0 &amp;&amp; typeof args[0] === 'function' ? args.shift() : null;
+  helpText = args.length > 0 &amp;&amp; typeof args[0] === 'string' ? args.shift() : null;
+  preference = args.length > 0 &amp;&amp; typeof args[0] === 'number' ? args.shift() : 0;
 
-  if (typeof phrase === 'string' && action) {
+  if (typeof phrase === 'string' &amp;&amp; action) {
     phrase = _.toLower(phrase);
     this.lexicon.push({'id': id, 'phrase': phrase, 'action': action, 'helpText': helpText, 'preference': preference});
     return id;
   }
 
-  else if (phrase instanceof RegExp && action) {
+  else if (phrase instanceof RegExp &amp;&amp; action) {
     this.lexicon.push({'id': id, 'phrase': phrase, 'action': action, 'helpText': helpText, 'preference': preference});
     return id;
   }
@@ -1782,7 +1810,7 @@ Framework.prototype.clearAuthorizer = function () {
  * @function
  * @memberof Framework
  * @param {Function} Driver - The storage driver.
- * @returns {Promise.<Boolean>} - True if driver loaded succesfully
+ * @returns {Promise.&lt;Boolean>} - True if driver loaded succesfully
  *
  * @example
  * // define memory store (default if not specified)
@@ -1800,7 +1828,7 @@ Framework.prototype.storageDriver = function (driver) {
   // validate storage module initStorage() method
   if (typeof driver.initStorage === 'function') {
     Bot.prototype.initStorage = function (framework) {
-      if ((typeof this.room && 'object') && (typeof this.room.id === 'string')) {
+      if ((typeof this.room &amp;&amp; 'object') &amp;&amp; (typeof this.room.id === 'string')) {
         var id = this.room.id;
         return driver.initStorage.call(driver, id, framework.initBotStorageData);
       } else {
@@ -1940,7 +1968,7 @@ Framework.prototype.checkMembershipRules = function () {
       if (options.restrictedToEmailDomains) {
         this.restrictedDomains = options.restrictedToEmailDomains.split(/[ ,]+/);
         if (this.restrictedDomains.length) {
-          for (let i = 0; i < this.restrictedDomains.length; i++) {
+          for (let i = 0; i &lt; this.restrictedDomains.length; i++) {
             let domain = this.restrictedDomains[i];
             if (!domain.match(/^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$/igm)) {
               throw new Error(`Invalid domain name: ${domain}`);
@@ -1953,7 +1981,7 @@ Framework.prototype.checkMembershipRules = function () {
       } if (options.guideEmails) {
         this.guideEmails = options.guideEmails.split(/[ ,]+/);
         if (this.guideEmails.length) {
-          for (let i = 0; i < this.guideEmails.length; i++) {
+          for (let i = 0; i &lt; this.guideEmails.length; i++) {
             if (!validator.isEmail(this.guideEmails[i])) {
               throw new Error(`Invalid email "${this.guideEmails[i]}" in guideEmails parameter`);
             }
@@ -1967,7 +1995,7 @@ Framework.prototype.checkMembershipRules = function () {
       // membership changes against our membership rules configuration
       this.membershipRules = require('./membership-rules')(this);
 
-      if ((this.restrictedDomains) && (this.guideEmails)) {
+      if ((this.restrictedDomains) &amp;&amp; (this.guideEmails)) {
         // Make sure guides fit within doman restriction rules
         this.guideEmails = this.guideEmails.filter(email => {
           if (this.membershipRules.isMemberAllowed({personEmail: email}, this.restrictedDomains)) {
@@ -2090,7 +2118,7 @@ Framework.prototype.emitBoth = function (event, bot, ...args) {
  */
 Framework.prototype.findBotObjectInRoom = function (roomId) {
   var bot = _.find(this.bots, bot => bot.room.id === roomId); 
-  if ((!bot) & ("membershipRules" in this)) {
+  if ((!bot) &amp; ("membershipRules" in this)) {
     bot = _.find(this.inactiveBots, bot => bot.room.id === roomId);
   }
   return (bot);
@@ -2113,7 +2141,7 @@ function cleanupListeners(framework) {
             return (webhook.name == u.base64encode(framework.options.webhookUrl.split('/')[2] + ' ' + framework.email));
           });
 
-          if (webhooksToRemove instanceof Array && webhooksToRemove.length > 0) {
+          if (webhooksToRemove instanceof Array &amp;&amp; webhooksToRemove.length > 0) {
             return when.map(webhooksToRemove, webhook => framework.webex.webhooks.remove(webhook))
               .then(() => when(true))
               .catch(() => when(true));
@@ -2174,3 +2202,26 @@ function optionsIncludeNonSupported(options) {
   return '';
 }
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a></li><li><a href="Framework.html">Framework</a></li><li><a href="Trigger.html">Trigger</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:botAddedAsModerator">botAddedAsModerator</a></li><li><a href="global.html#event:botRemovedAsModerator">botRemovedAsModerator</a></li><li><a href="global.html#event:despawn">despawn</a></li><li><a href="global.html#event:files">files</a></li><li><a href="global.html#event:initialized">initialized</a></li><li><a href="global.html#event:log">log</a></li><li><a href="global.html#event:memberAddedAsModerator">memberAddedAsModerator</a></li><li><a href="global.html#event:memberEnters">memberEnters</a></li><li><a href="global.html#event:memberExits">memberExits</a></li><li><a href="global.html#event:memberRemovedAsModerator">memberRemovedAsModerator</a></li><li><a href="global.html#event:mentioned">mentioned</a></li><li><a href="global.html#event:message">message</a></li><li><a href="global.html#event:roomLocked">roomLocked</a></li><li><a href="global.html#event:roomRenamed">roomRenamed</a></li><li><a href="global.html#event:roomUnocked">roomUnocked</a></li><li><a href="global.html#event:spawn">spawn</a></li><li><a href="global.html#event:start">start</a></li><li><a href="global.html#event:stop">stop</a></li></ul><h3>Global</h3><ul><li><a href="global.html#findInvalidMemberDomains">findInvalidMemberDomains</a></li><li><a href="global.html#generateDespawn">generateDespawn</a></li><li><a href="global.html#generateSpawn">generateSpawn</a></li><li><a href="global.html#getMemberships">getMemberships</a></li><li><a href="global.html#getPersonEmail">getPersonEmail</a></li><li><a href="global.html#guideRequirementsAreMet">guideRequirementsAreMet</a></li><li><a href="global.html#isDomainAllowed">isDomainAllowed</a></li><li><a href="global.html#swallowSpawn">swallowSpawn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 08 2022 16:54:18 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

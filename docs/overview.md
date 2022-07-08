@@ -1,8 +1,10 @@
 ## Overview
 
-The framework provides developers with some basic scaffolding to quickly get a bot up and running.  Once a framework object is created with a configuration that includes a bot token, calling the framework.start() method kicks of the setup of this scaffolding.   The framework registers for all Webex Teams events, and may discover existing Webex Teams spaces that the bot is already a member of.  
+The framework provides developers with some basic scaffolding to quickly get a bot up and running.  Once a {@link Framework|framework} object is created with a configuration that includes a bot token, calling the {@link Framework#start|framework.start()} method kicks of the setup of this scaffolding.   The framework registers for all Webex Teams events, and may discover existing Webex Teams spaces that the bot is already a member of.  
 
 A `bot` object is created for each space, and the framework generates a `spawn` event each time it finds a new one.  When all existing bot objects are created the framework generates an `initialized` event signalling that it is ready to begin "listening" for user input.
+
+The  class.
 
 
 ```js

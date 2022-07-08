@@ -1,4 +1,32 @@
-'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: bot.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: bot.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
 var EventEmitter = require('events').EventEmitter;
 var validator = require('../lib/validator');
@@ -16,11 +44,11 @@ const Framework = require('./framework');
 // format makrdown type
 function markdownFormat(str) {
   // if string...
-  if (str && typeof str === 'string') {
+  if (str &amp;&amp; typeof str === 'string') {
 
     // process characters that do not render visibly in markdown
-    str = str.replace(/\<(?!(@|blockquote|\/blockquote))/g, '&lt;');
-    str = str.split('').reverse().join('').replace(/\>(?!.*(@|etouqkcolb|etouqkcolb\/)\<)/g, ';tg&').split('').reverse().join('');
+    str = str.replace(/\&lt;(?!(@|blockquote|\/blockquote))/g, '&amp;lt;');
+    str = str.split('').reverse().join('').replace(/\>(?!.*(@|etouqkcolb|etouqkcolb\/)\&lt;)/g, ';tg&amp;').split('').reverse().join('');
 
     return str;
   }
@@ -155,7 +183,7 @@ Bot.prototype.start = function () {
  * Instructs Bot to exit from room.
  *
  * @function
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  *
  * @example
  * bot.exit();
@@ -207,7 +235,7 @@ Bot.prototype.getWebexSDK = function () {
  * @param {(String|Array)} email(s) - Email Address (or Array of Email Addresses) of Person(s) to add to room.
  * @param {Boolean} [moderator]
  * Add as moderator.
- * @returns {Promise.<Array>} Array of emails added
+ * @returns {Promise.&lt;Array>} Array of emails added
  * @example
  * // add one person to room by email
  * bot.add('john@test.com');
@@ -225,7 +253,7 @@ Bot.prototype.getWebexSDK = function () {
 Bot.prototype.add = function (email, asModerator) {
 
   // validate to boolean
-  asModerator = (typeof asModerator === 'boolean' && asModerator);
+  asModerator = (typeof asModerator === 'boolean' &amp;&amp; asModerator);
 
   // function to add membership by email address to this room
   var add = (e, m) => {
@@ -255,16 +283,16 @@ Bot.prototype.add = function (email, asModerator) {
   if (!this.isGroup) {
     return when.reject(new Error('can not add person to a 1:1 room'));
   } else {
-    if (this.isLocked && !this.isModerator) {
+    if (this.isLocked &amp;&amp; !this.isModerator) {
       return when.reject(new Error('room is locked and bot is not moderator'));
     }
 
-    if (!this.isLocked && asModerator) {
+    if (!this.isLocked &amp;&amp; asModerator) {
       return when.reject(new Error('can not add moderator to a unlocked room'));
     }
 
     // if passed as array, create batch process
-    if (email instanceof Array && email.length > 1) {
+    if (email instanceof Array &amp;&amp; email.length > 1) {
 
       // create batch
       var batch = _.map(email, e => {
@@ -277,7 +305,7 @@ Bot.prototype.add = function (email, asModerator) {
         batchResult = _.compact(batchResult);
 
         // if array of resulting emails is not empty...
-        if (batchResult instanceof Array && batchResult.length > 0) {
+        if (batchResult instanceof Array &amp;&amp; batchResult.length > 0) {
           return batchResult;
         } else {
           return when.reject('invalid email(s) or email not specified');
@@ -286,7 +314,7 @@ Bot.prototype.add = function (email, asModerator) {
     }
 
     // else, add using email
-    else if (typeof email === 'string' || (email instanceof Array && email.length === 1)) {
+    else if (typeof email === 'string' || (email instanceof Array &amp;&amp; email.length === 1)) {
       if (email instanceof Array) {
         email = _.toLower(email[0]);
       }
@@ -312,7 +340,7 @@ Bot.prototype.add = function (email, asModerator) {
  *
  * @function
  * @param {(String|Array)} email(s) - Email Address (or Array of Email Addresses) of Person(s) to remove from room.
- * @returns {Promise.<Array>} Array of emails removed
+ * @returns {Promise.&lt;Array>} Array of emails removed
  *
  * @example
  * // remove one person to room by email
@@ -328,7 +356,7 @@ Bot.prototype.remove = function (email) {
 
   // remove membership by email address from this room
   var remove = e => {
-    //  if (validator.isEmail(e) && _.includes(_.map(this.memberships, 'personEmail'), e)) {
+    //  if (validator.isEmail(e) &amp;&amp; _.includes(_.map(this.memberships, 'personEmail'), e)) {
     //    return this.framework.webex.memberships.list({ roomId: this.room.id, personEmail: e })
     return this.framework.webex.memberships.list({ roomId: this.room.id, personEmail: email })
       .then((memberships) => {
@@ -357,12 +385,12 @@ Bot.prototype.remove = function (email) {
   if (!this.isGroup) {
     return when.reject(new Error('can not remove person from a 1:1 room'));
   } else {
-    if (this.isLocked && !this.isModerator) {
+    if (this.isLocked &amp;&amp; !this.isModerator) {
       return when.reject(new Error('room is locked and bot is not moderator'));
     }
 
     // if passed as array, create batch process
-    if (email instanceof Array && email.length > 1) {
+    if (email instanceof Array &amp;&amp; email.length > 1) {
 
       // create batch
       var batch = _.map(email, e => {
@@ -374,7 +402,7 @@ Bot.prototype.remove = function (email) {
         batchResult = _.compact(batchResult);
 
         // if array of resulting emails is not empty...
-        if (batchResult instanceof Array && batchResult.length > 0) {
+        if (batchResult instanceof Array &amp;&amp; batchResult.length > 0) {
           return batchResult;
         } else {
           return when.reject(new Error('invalid email(s) or email not specified'));
@@ -383,7 +411,7 @@ Bot.prototype.remove = function (email) {
     }
 
     // else, remove using email
-    else if (typeof email === 'string' || (email instanceof Array && email.length === 1)) {
+    else if (typeof email === 'string' || (email instanceof Array &amp;&amp; email.length === 1)) {
       if (email instanceof Array) {
         email = email[0];
       }
@@ -410,7 +438,7 @@ Bot.prototype.remove = function (email) {
  * @function
  * @private
  * @param {String} email - Email of person to retrieve membership object of.
- * @returns {Promise.<Membership>}
+ * @returns {Promise.&lt;Membership>}
  *
  * @example
  * bot.getMembership('john@test.com')
@@ -428,7 +456,7 @@ Bot.prototype.getMembership = function (email) {
       roomId: this.room.id,
       personEmail: email
     }).then((memberships) => {
-      if ((typeof memberships.items === 'object') && (memberships.items.length >= 1)) {
+      if ((typeof memberships.items === 'object') &amp;&amp; (memberships.items.length >= 1)) {
         return when(memberships.items[0])
       } else {
         return when.reject(new Error('Person not found in room'));
@@ -444,7 +472,7 @@ Bot.prototype.getMembership = function (email) {
  * Get room moderators.
  *
  * @function
- * @returns {Promise.<Array>}
+ * @returns {Promise.&lt;Array>}
  *
  * @example
  * bot.getModerators()
@@ -465,7 +493,7 @@ Bot.prototype.getModerators = function () {
  * @param {String} name - Name of room.
  * @param {Array} emails - Emails of people to add to room.
  * @param {Boolean} isTeam -- Create a team room (if bot is already in a team space)
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  */
 Bot.prototype.newRoom = function (name, emails, isTeam) {
   var newRoomBot = {};
@@ -540,7 +568,7 @@ Bot.prototype.newRoom = function (name, emails, isTeam) {
     // if error, attempt to remove room before rejecting
     .catch(err => {
 
-      if (newRoom && newRoom.id) {
+      if (newRoom &amp;&amp; newRoom.id) {
         this.framework.webex.rooms.remove(newRoom)
           .catch(() => {/* ignore remove room errors */ });
       }
@@ -559,7 +587,7 @@ Bot.prototype.newRoom = function (name, emails, isTeam) {
  * @function
  * @param {String} name - Name of room.
  * @param {Array} emails - Emails of people to add to room.
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  */
 Bot.prototype.newTeamRoom = function (name, emails) {
 
@@ -576,7 +604,7 @@ Bot.prototype.newTeamRoom = function (name, emails) {
  * using a bot token, it requires an authorized user token
  *
  * @function
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  *
  * @example
  * bot.moderateRoom()
@@ -618,7 +646,7 @@ Bot.prototype.moderateRoom = function () {
  * using a bot token, it requires an authorized user token
  *
  * @function
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  *
  * @example
  * bot.unmoderateRoom()
@@ -641,7 +669,7 @@ Bot.prototype.unmoderateRoom = function () {
     return when.reject(new Error('Room is not moderated'));
   }
 
-  else if (this.isLocked && !this.isModerator) {
+  else if (this.isLocked &amp;&amp; !this.isModerator) {
     return when.reject(new Error('Bot is not a moderator in this room'));
   }
 
@@ -673,7 +701,7 @@ Bot.prototype.unmoderateRoom = function () {
  *
  * @function
  * @param {(String|Array)} email(s) - Email Address (or Array of Email Addresses) of Person(s) to assign as moderator.
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  *
  * @example
  * bot.moderatorSet('john@test.com')
@@ -709,7 +737,7 @@ Bot.prototype.moderatorSet = function (email) {
     return when.reject(new Error('Room is not moderated'));
   }
 
-  else if (this.isLocked && !this.isModerator) {
+  else if (this.isLocked &amp;&amp; !this.isModerator) {
     return when.reject(new Error('Bot is not moderator in this room'));
   }
 
@@ -744,7 +772,7 @@ Bot.prototype.moderatorSet = function (email) {
  *
  * @function
  * @param {(String|Array)} email(s) - Email Address (or Array of Email Addresses) of Person(s) to unassign as moderator.
- * @returns {Promise.<Bot>}
+ * @returns {Promise.&lt;Bot>}
  *
  * @example
  * bot.moderatorClear('john@test.com')
@@ -781,7 +809,7 @@ Bot.prototype.moderatorClear = function (email) {
     return when.reject(new Error('Room is not moderated'));
   }
 
-  else if (this.isLocked && !this.isModerator) {
+  else if (this.isLocked &amp;&amp; !this.isModerator) {
     return when.reject(new Error('Bot is not a moderator in this room'));
   }
 
@@ -812,7 +840,7 @@ Bot.prototype.moderatorClear = function (email) {
  * Remove a room and all memberships.
  *
  * @function
- * @returns {Promise.<Boolean>}
+ * @returns {Promise.&lt;Boolean>}
  *
  * @example
  * framework.hears('/implode', function(bot, trigger) {
@@ -827,7 +855,7 @@ Bot.prototype.implode = function () {
   }
 
   // validate bot is moderator if room is locked
-  if (this.isLocked && !this.isModerator) {
+  if (this.isLocked &amp;&amp; !this.isModerator) {
     return when.reject(new Error('Bot is not moderator in this room'));
   }
 
@@ -842,7 +870,7 @@ Bot.prototype.implode = function () {
  * @function
  * @param {String} [format=text] - Set message format. Valid options are 'text' or 'markdown'.
  * @param {String|Object} message - Message to send to room. This can be a simple string, or a object for advanced use.
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  *
  * @example
  * // Simple example
@@ -872,7 +900,7 @@ Bot.prototype.implode = function () {
  * @example
  * // Mardown Method 3 - Use an object (use this method of bot.say() when needing to send a file in the same message as markdown text.
  * framework.hears('/hello', function(bot, trigger) {
- *   bot.say({markdown: '*Hello <@personEmail:' + trigger.personEmail + '|' + trigger.personDisplayName + '>*'});
+ *   bot.say({markdown: '*Hello &lt;@personEmail:' + trigger.personEmail + '|' + trigger.personDisplayName + '>*'});
  * });
  * 
  * @example
@@ -890,7 +918,7 @@ Bot.prototype.implode = function () {
 Bot.prototype.say = function (format, message) {
   if (!this.active) {
     let msg = 'bot.say() failed, bot is not in active state';
-    if ((this.framework) && ("membershipRules" in this.framework)) {
+    if ((this.framework) &amp;&amp; ("membershipRules" in this.framework)) {
       msg += ' due to membership rules.  Use bot.webex.message.create() to override';
     }
     return when.reject(new Error(msg));
@@ -902,14 +930,14 @@ Bot.prototype.say = function (format, message) {
   // parse function args and check for wierd behavior of 
   // arguments object when function is called in a function
   var args = Array.prototype.slice.call(arguments);
-  if ((args.length > 1) && (args[1] === undefined)) {
+  if ((args.length > 1) &amp;&amp; (args[1] === undefined)) {
     args.pop();
   }
 
   // determine if a format is defined in arguments
   // first and second arguments should be string type
   // first argument should be one of the valid formats
-  var formatDefined = (args.length > 1 && typeof args[0] === 'string' && typeof args[1] === 'string' && _.includes(['text', 'markdown', 'html'], _.toLower(args[0])));
+  var formatDefined = (args.length > 1 &amp;&amp; typeof args[0] === 'string' &amp;&amp; typeof args[1] === 'string' &amp;&amp; _.includes(['text', 'markdown', 'html'], _.toLower(args[0])));
 
   // if format defined in function arguments, overide default
   if (formatDefined) {
@@ -954,7 +982,7 @@ Bot.prototype.say = function (format, message) {
  * @function
  * @param {String|Object} message - Message to send to room. If null or empty string is ignored.  If set the default messageFormat is used
  * @param {String} filename - name of local file to send to space
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  *
  * @example
  * // Simple example
@@ -966,7 +994,7 @@ Bot.prototype.say = function (format, message) {
 Bot.prototype.sayWithLocalFile = function (message, filename) {
   if (!this.active) {
     let msg = 'bot.sayWithLocalFile() failed, bot is not in active state';
-    if ((this.framework) && ("membershipRules" in this.framework)) {
+    if ((this.framework) &amp;&amp; ("membershipRules" in this.framework)) {
       msg += ' due to membership rules.  Use bot.webex.message.create() to override';
     }
     return when.reject(new Error(msg));
@@ -981,7 +1009,7 @@ Bot.prototype.sayWithLocalFile = function (message, filename) {
 
 
       // Check for invalid message param
-      if ((message !== null) && (typeof message !== 'string')) {
+      if ((message !== null) &amp;&amp; (typeof message !== 'string')) {
         return when.reject(new Error('bot.sayWithLocalFile(): message param must be string or null'));
       } else if (typeof message === 'string') {
         // if markdown or html, apply formatter to contructed message string
@@ -1012,7 +1040,7 @@ Bot.prototype.sayWithLocalFile = function (message, filename) {
  * @param {String|Object} replyTo - MessageId or message object or attachmentAction object to send to reply to.
  * @param {String|Object} message - Message to send to room. This can be a simple string, or a message object for advanced use.
  * @param {String} [format=text] - Set message format. Valid options are 'text' or 'markdown'. Ignored if message is an object
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  *
  * @example
  * // Simple example
@@ -1036,7 +1064,7 @@ Bot.prototype.sayWithLocalFile = function (message, filename) {
  * @example
  * // Mardown Method 3 - Use an object (use this method of bot.reply() when needing to send a file in the same message as markdown text.
  * framework.hears('/hello', function(bot, trigger) {
- *   bot.reply(trigger.message, {markdown: '*Hello <@personEmail:' + trigger.personEmail + '|' + trigger.personDisplayName + '>*'});
+ *   bot.reply(trigger.message, {markdown: '*Hello &lt;@personEmail:' + trigger.personEmail + '|' + trigger.personDisplayName + '>*'});
  * });
  * 
  * @example
@@ -1084,7 +1112,7 @@ Bot.prototype.reply = function (replyTo, message, format) {
   // use the default format type if the format was not specified
   if (!format) {
     var format = this.framework.messageFormat;
-  } else if ((format !== 'markdown') && (format !== 'text')) {
+  } else if ((format !== 'markdown') &amp;&amp; (format !== 'text')) {
     return when.reject(new Error('bot.reply(): Invalid format parameter.  Must be "markdown" or "text".'));
   }
 
@@ -1110,7 +1138,7 @@ Bot.prototype.reply = function (replyTo, message, format) {
  * @param {String} person - Email or personId of person to send Direct Message.
  * @param {String} [format=text] - Set message format. Valid options are 'text' or 'markdown'.
  * @param {String|Object} message - Message to send to room. This can be a simple string, or a object for advanced use.
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  *
  * @example
  * // Simple example
@@ -1140,12 +1168,12 @@ Bot.prototype.reply = function (replyTo, message, format) {
  * @example
  * // Mardown Method 3 - Use an object (use this method of bot.dm() when needing to send a file in the same message as markdown text.
  * framework.hears('dm someone', function(bot, trigger) {
- *   bot.dm('someone@domain.com', {markdown: '*Hello <@personId:' + trigger.person.id + '|' + trigger.person.displayName + '>*'});
+ *   bot.dm('someone@domain.com', {markdown: '*Hello &lt;@personId:' + trigger.person.id + '|' + trigger.person.displayName + '>*'});
  * });
  */
 Bot.prototype.dm = function (person, format, message) {
   // TODO -if membership rules check if recipient is allowed
-  if (("membershipRules" in this.framework) && 
+  if (("membershipRules" in this.framework) &amp;&amp; 
     (!this.framework.membershipRules.isNewPersonAllowed(person))) {
     let msg = 'bot.dm() failed, user is disallowed due to membership rules. ' +
       'Use bot.webex.message.create() to override';
@@ -1155,15 +1183,15 @@ Bot.prototype.dm = function (person, format, message) {
   // parse function args and check for wierd behavior of 
   // arguments object when function is called in a function
   var args = Array.prototype.slice.call(arguments);
-  if ((args.length > 2) && (args[2] === undefined)) {
+  if ((args.length > 2) &amp;&amp; (args[2] === undefined)) {
     args.pop();
   }
 
   message = args.length > 0 ? args.pop() : false;
   person = args.length > 0 ? args.shift() : false;
-  format = args.length > 0 && _.includes(['markdown', 'html', 'text'], format) ? args.shift() : this.framework.messageFormat || 'text';
+  format = args.length > 0 &amp;&amp; _.includes(['markdown', 'html', 'text'], format) ? args.shift() : this.framework.messageFormat || 'text';
 
-  if ((person) && (typeof message === 'string' || typeof message === 'object')) {
+  if ((person) &amp;&amp; (typeof message === 'string' || typeof message === 'object')) {
 
     var toType;
     if (validator.isEmail(person)) {
@@ -1203,7 +1231,7 @@ Bot.prototype.dm = function (person, format, message) {
  * @function
  * @param {Object} cardJson - The card JSON to render.  This can come from the Webex Buttons and Cards Designer.
  * @param {String} fallbackText - Message to be displayed on client's that can't render cards.
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  * 
  * @see {@link https://developer.webex.com/docs/api/guides/cards#working-with-cards|Buttons and Cards Guide} for further information.
  * @see {@link ./docs/buttons-and-cards-example.md|Buttons and Cards Framework Example}
@@ -1259,7 +1287,7 @@ Bot.prototype.dm = function (person, format, message) {
 Bot.prototype.sendCard = function (cardJson, fallbackText) {
   if (!this.active) {
     let msg = 'bot.sendCard() failed, bot is not in active state';
-    if ((this.framework) && ("membershipRules" in this.framework)) {
+    if ((this.framework) &amp;&amp; ("membershipRules" in this.framework)) {
       msg += ' due to membership rules.  Use bot.webex.message.create() to override';
     }
     return when.reject(new Error(msg));
@@ -1279,7 +1307,7 @@ Bot.prototype.sendCard = function (cardJson, fallbackText) {
  * @param {String} person - Email or ID of the user to 1-1 message.
  * @param {Object} cardJson - The card JSON to render.  This can come from the Webex Buttons and Cards Designer.
  * @param {String} fallbackText - Message to be displayed on client's that can't render cards.
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  * 
  * @example
  * // Simple example
@@ -1306,7 +1334,7 @@ Bot.prototype.sendCard = function (cardJson, fallbackText) {
 Bot.prototype.dmCard = function (person, cardJson, fallbackText) {
   if (!this.active) {
     let msg = 'bot.dmCard() failed, bot is not in active state';
-    if ((this.framework) && ("membershipRules" in this.framework)) {
+    if ((this.framework) &amp;&amp; ("membershipRules" in this.framework)) {
       msg += ' due to membership rules.  Use bot.webex.message.create() to override';
     }
     return when.reject(new Error(msg));
@@ -1323,7 +1351,7 @@ Bot.prototype.dmCard = function (person, cardJson, fallbackText) {
  * @function
  * @param {String} filename - File name used when uploading to room
  * @param {Stream.Readable} stream - Stream Readable
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  *
  * @example
  * framework.hears('/file', function(bot, trigger) {
@@ -1340,7 +1368,7 @@ Bot.prototype.dmCard = function (person, cardJson, fallbackText) {
 Bot.prototype.uploadStream = function (stream) {
   if (!this.active) {
     let msg = 'bot.uploadStream() failed, bot is not in active state';
-    if ((this.framework) && ("membershipRules" in this.framework)) {
+    if ((this.framework) &amp;&amp; ("membershipRules" in this.framework)) {
       msg += ' due to membership rules.  Use bot.webex.message.create() to override';
     }
     return when.reject(new Error(msg));
@@ -1357,14 +1385,14 @@ Bot.prototype.uploadStream = function (stream) {
  *
  * @function
  * @param {String} messageId
- * @returns {Promise.<Message>}
+ * @returns {Promise.&lt;Message>}
  */
 Bot.prototype.censor = function (messageId) {
   return this.framework.webex.messages.get(messageId)
     .then(message => {
 
       // if bot can delete a message...
-      if ((this.isLocked && this.isModerator && !this.framework.isBotAccount) || message.personId === this.person.id) {
+      if ((this.isLocked &amp;&amp; this.isModerator &amp;&amp; !this.framework.isBotAccount) || message.personId === this.person.id) {
         return this.framework.webex.messages.remove(messageId);
       }
       else {
@@ -1378,7 +1406,7 @@ Bot.prototype.censor = function (messageId) {
  *
  * @function
  * @param {String} title
- * @returns {Promise.<Room>}
+ * @returns {Promise.&lt;Room>}
  *
  * @example
  * bot.roomRename('My Renamed Room')
@@ -1390,7 +1418,7 @@ Bot.prototype.roomRename = function (title) {
   if (!this.isGroup) {
     return when.reject(new Error('Can not set title of 1:1 room'));
   }
-  else if (this.isLocked && !this.isModerator) {
+  else if (this.isLocked &amp;&amp; !this.isModerator) {
     return when.reject(new Error('Bot is not moderator in this room'));
   }
   else {
@@ -1413,7 +1441,7 @@ Bot.prototype.roomRename = function (title) {
  * @function
  * @param {String} key - Key under id object
  * @param {(String|Number|Boolean|Array|Object)} value - Value of key
- * @returns {(Promise.<String>|Promise.<Number>|Promise.<Boolean>|Promise.<Array>|Promise.<Object>)}
+ * @returns {(Promise.&lt;String>|Promise.&lt;Number>|Promise.&lt;Boolean>|Promise.&lt;Array>|Promise.&lt;Object>)}
  */
 Bot.prototype.store = null;
 
@@ -1422,7 +1450,7 @@ Bot.prototype.store = null;
  *
  * @function
  * @param {String} [key] - Key under id object (optional). If key is not passed, all keys for id are returned as an object.
- * @returns {(Promise.<String>|Promise.<Number>|Promise.<Boolean>|Promise.<Array>|Promise.<Object>)}
+ * @returns {(Promise.&lt;String>|Promise.&lt;Number>|Promise.&lt;Boolean>|Promise.&lt;Array>|Promise.&lt;Object>)}
  */
 Bot.prototype.recall = null;
 
@@ -1431,7 +1459,7 @@ Bot.prototype.recall = null;
  *
  * @function
  * @param {String} [key] - Key under id object (optional). If key is not passed, id and all children are removed.
- * @returns {(Promise.<String>|Promise.<Number>|Promise.<Boolean>|Promise.<Array>|Promise.<Object>)}
+ * @returns {(Promise.&lt;String>|Promise.&lt;Number>|Promise.&lt;Boolean>|Promise.&lt;Array>|Promise.&lt;Object>)}
  */
 Bot.prototype.forget = null;
 
@@ -1462,3 +1490,26 @@ function buildCardMsgObj(cardJson, fallbackFormat, fallbackText) {
 
   return messageObj;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a></li><li><a href="Framework.html">Framework</a></li><li><a href="Trigger.html">Trigger</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:botAddedAsModerator">botAddedAsModerator</a></li><li><a href="global.html#event:botRemovedAsModerator">botRemovedAsModerator</a></li><li><a href="global.html#event:despawn">despawn</a></li><li><a href="global.html#event:files">files</a></li><li><a href="global.html#event:initialized">initialized</a></li><li><a href="global.html#event:log">log</a></li><li><a href="global.html#event:memberAddedAsModerator">memberAddedAsModerator</a></li><li><a href="global.html#event:memberEnters">memberEnters</a></li><li><a href="global.html#event:memberExits">memberExits</a></li><li><a href="global.html#event:memberRemovedAsModerator">memberRemovedAsModerator</a></li><li><a href="global.html#event:mentioned">mentioned</a></li><li><a href="global.html#event:message">message</a></li><li><a href="global.html#event:roomLocked">roomLocked</a></li><li><a href="global.html#event:roomRenamed">roomRenamed</a></li><li><a href="global.html#event:roomUnocked">roomUnocked</a></li><li><a href="global.html#event:spawn">spawn</a></li><li><a href="global.html#event:start">start</a></li><li><a href="global.html#event:stop">stop</a></li></ul><h3>Global</h3><ul><li><a href="global.html#findInvalidMemberDomains">findInvalidMemberDomains</a></li><li><a href="global.html#generateDespawn">generateDespawn</a></li><li><a href="global.html#generateSpawn">generateSpawn</a></li><li><a href="global.html#getMemberships">getMemberships</a></li><li><a href="global.html#getPersonEmail">getPersonEmail</a></li><li><a href="global.html#guideRequirementsAreMet">guideRequirementsAreMet</a></li><li><a href="global.html#isDomainAllowed">isDomainAllowed</a></li><li><a href="global.html#swallowSpawn">swallowSpawn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 08 2022 16:54:18 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,4 +1,32 @@
-const validator = require('validator');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: validator.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: validator.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const validator = require('validator');
 const when = require('when');
 const fs = require('fs');
 const _ = require('lodash');
@@ -21,16 +49,16 @@ const Validator = {};
  */
 Validator.isFramework = (framework) => {
   const result = (typeof framework === 'object'
-    && (typeof framework.id === 'string')
-    && (typeof framework.active === 'boolean')
-    && (typeof framework.initialized === 'boolean')
-    && (typeof framework.isBotAccount === 'boolean')
-    && (typeof framework.isUserAccount === 'boolean')
-    && (typeof framework.options === 'object')
-    && (typeof framework.person === 'object')
-    && (typeof framework.email === 'string')
-    && (typeof framework.webex === 'object')
-    && (typeof framework.bots === 'object')
+    &amp;&amp; (typeof framework.id === 'string')
+    &amp;&amp; (typeof framework.active === 'boolean')
+    &amp;&amp; (typeof framework.initialized === 'boolean')
+    &amp;&amp; (typeof framework.isBotAccount === 'boolean')
+    &amp;&amp; (typeof framework.isUserAccount === 'boolean')
+    &amp;&amp; (typeof framework.options === 'object')
+    &amp;&amp; (typeof framework.person === 'object')
+    &amp;&amp; (typeof framework.email === 'string')
+    &amp;&amp; (typeof framework.webex === 'object')
+    &amp;&amp; (typeof framework.bots === 'object')
   );
   return result;
 };
@@ -45,18 +73,18 @@ Validator.isFramework = (framework) => {
  */
 Validator.isBot = (bot) => {
   const result = (typeof bot === 'object'
-    && (typeof bot.id === 'string')
-    && (typeof bot.email === 'string')
-    && (typeof bot.framework === 'object')
-    && (typeof bot.isDirect === 'boolean')
-    && (typeof bot.isGroup === 'boolean')
-    && (typeof bot.isLocked === 'boolean')
-    && (typeof bot.isModerator === 'boolean')
-    && (typeof bot.lastActivity === 'string')
-    && (typeof bot.membership === 'object')
-    && (typeof bot.options === 'object')
-    && (typeof bot.person === 'object')
-    && (typeof bot.room === 'object')
+    &amp;&amp; (typeof bot.id === 'string')
+    &amp;&amp; (typeof bot.email === 'string')
+    &amp;&amp; (typeof bot.framework === 'object')
+    &amp;&amp; (typeof bot.isDirect === 'boolean')
+    &amp;&amp; (typeof bot.isGroup === 'boolean')
+    &amp;&amp; (typeof bot.isLocked === 'boolean')
+    &amp;&amp; (typeof bot.isModerator === 'boolean')
+    &amp;&amp; (typeof bot.lastActivity === 'string')
+    &amp;&amp; (typeof bot.membership === 'object')
+    &amp;&amp; (typeof bot.options === 'object')
+    &amp;&amp; (typeof bot.person === 'object')
+    &amp;&amp; (typeof bot.room === 'object')
   );
   return result;
 };
@@ -71,16 +99,16 @@ Validator.isBot = (bot) => {
  */
 Validator.isTrigger = (trigger) => {
   let result = (typeof trigger === 'object'
-    && (typeof trigger.id === 'string')
-    && (typeof trigger.person === 'object')
-    && (typeof trigger.personId === 'string')
-    && (typeof trigger.type === 'string')
+    &amp;&amp; (typeof trigger.id === 'string')
+    &amp;&amp; (typeof trigger.person === 'object')
+    &amp;&amp; (typeof trigger.personId === 'string')
+    &amp;&amp; (typeof trigger.type === 'string')
   );
   if (result) {
     if (trigger.type === 'message') {
       result = (typeof trigger.message === 'object'
-        && (typeof trigger.args === 'object')
-        && (typeof trigger.text === 'string')
+        &amp;&amp; (typeof trigger.args === 'object')
+        &amp;&amp; (typeof trigger.text === 'string')
       );
     } else if (trigger.type === 'attachmentAction') {
       result = (typeof trigger.attachmentAction === 'object');
@@ -101,13 +129,13 @@ Validator.isTrigger = (trigger) => {
  */
 Validator.isAttachmentAction = (attachmentAction) => {
   let result = (typeof attachmentAction === 'object'
-    && (typeof attachmentAction.created === 'string')
-    && (typeof attachmentAction.id === 'string')
-    && (typeof attachmentAction.inputs === 'object')
-    && (typeof attachmentAction.messageId === 'string')
-    && (typeof attachmentAction.personId === 'string')
-    && (typeof attachmentAction.roomId === 'string')
-    && (typeof attachmentAction.type === 'string')
+    &amp;&amp; (typeof attachmentAction.created === 'string')
+    &amp;&amp; (typeof attachmentAction.id === 'string')
+    &amp;&amp; (typeof attachmentAction.inputs === 'object')
+    &amp;&amp; (typeof attachmentAction.messageId === 'string')
+    &amp;&amp; (typeof attachmentAction.personId === 'string')
+    &amp;&amp; (typeof attachmentAction.roomId === 'string')
+    &amp;&amp; (typeof attachmentAction.type === 'string')
   );
   return result;
 };
@@ -122,12 +150,12 @@ Validator.isAttachmentAction = (attachmentAction) => {
  */
 Validator.isCardJson = (cardJson) => {
   let result = (typeof cardJson === 'object'
-    // && (typeof cardJson.$schema === 'string')
-    // && (cardJson.$schema === 'http://adaptivecards.io/schemas/adaptive-card.json')
-    && (typeof cardJson.type === 'string')
-    && (cardJson.type === 'AdaptiveCard')
-    && (typeof cardJson.version === 'string')
-    && (typeof cardJson.body === 'object')
+    // &amp;&amp; (typeof cardJson.$schema === 'string')
+    // &amp;&amp; (cardJson.$schema === 'http://adaptivecards.io/schemas/adaptive-card.json')
+    &amp;&amp; (typeof cardJson.type === 'string')
+    &amp;&amp; (cardJson.type === 'AdaptiveCard')
+    &amp;&amp; (typeof cardJson.version === 'string')
+    &amp;&amp; (typeof cardJson.body === 'object')
   );
   return result;
 };
@@ -272,7 +300,7 @@ Validator.isFilePath = (path) => {
  *
  * @function
  * @memberof Validator
- * @param {Object.<Options>} options Validate that object passed includes all
+ * @param {Object.&lt;Options>} options Validate that object passed includes all
  * valid options for framework constructor
  * @returns {Boolean} result
  */
@@ -283,17 +311,17 @@ Validator.isOptions = options => (typeof options === 'object'); // TODO
  *
  * @function
  * @memberof Validator
- * @param {Object.<File>} file Validate that object passed includes all valid
+ * @param {Object.&lt;File>} file Validate that object passed includes all valid
  * options required in a file object
  * @returns {Boolean} result
  */
 Validator.isFile = (file) => {
   const result = (typeof file === 'object'
-    && file.name
-    && file.ext
-    && file.type
-    && file.binary
-    && file.base64
+    &amp;&amp; file.name
+    &amp;&amp; file.ext
+    &amp;&amp; file.type
+    &amp;&amp; file.binary
+    &amp;&amp; file.base64
   );
   return result;
 };
@@ -308,12 +336,12 @@ Validator.isFile = (file) => {
  */
 Validator.isEvent = (event) => {
   const result = (typeof event === 'object'
-    && event.id
-    && event.resource
-    && event.type
-    && event.actorId
-    && event.created
-    && event.data && typeof event.data === 'object'
+    &amp;&amp; event.id
+    &amp;&amp; event.resource
+    &amp;&amp; event.type
+    &amp;&amp; event.actorId
+    &amp;&amp; event.created
+    &amp;&amp; event.data &amp;&amp; typeof event.data === 'object'
   );
   return result;
 };
@@ -358,8 +386,8 @@ Validator.isEventSearch = (searchObj) => {
  */
 Validator.isLicense = (license) => {
   const result = (typeof license === 'object'
-    && license.id
-    && license.name
+    &amp;&amp; license.id
+    &amp;&amp; license.name
   );
   return result;
 };
@@ -404,9 +432,9 @@ Validator.isLicenseSearch = (searchObj) => {
  */
 Validator.isMembership = (membership) => {
   const result = (typeof membership === 'object'
-    && membership.roomId
-    && membership.personId
-    && membership.personEmail
+    &amp;&amp; membership.roomId
+    &amp;&amp; membership.personId
+    &amp;&amp; membership.personEmail
   );
   return result;
 };
@@ -441,9 +469,9 @@ Validator.isMembershipSearch = (searchObj) => {
     return false;
   }
 
-  const searchByRoomId = (searchObj.roomId && !searchObj.personId && !searchObj.personEmail);
-  const searchByPersonId = (searchObj.roomId && searchObj.personId);
-  const searchByPersonEmail = (searchObj.roomId && searchObj.personEmail);
+  const searchByRoomId = (searchObj.roomId &amp;&amp; !searchObj.personId &amp;&amp; !searchObj.personEmail);
+  const searchByPersonId = (searchObj.roomId &amp;&amp; searchObj.personId);
+  const searchByPersonEmail = (searchObj.roomId &amp;&amp; searchObj.personEmail);
 
   return (searchByRoomId || searchByPersonId || searchByPersonEmail);
 };
@@ -462,10 +490,10 @@ Validator.isMessage = (message) => {
   }
 
   const directMessage = (message.toPersonId || message.toPersonEmail);
-  const groupMessage = (!directMessage && message.roomId);
+  const groupMessage = (!directMessage &amp;&amp; message.roomId);
 
   const result = ((directMessage || groupMessage)
-    && (message.text || message.markdown || message.files));
+    &amp;&amp; (message.text || message.markdown || message.files));
   return result;
 };
 
@@ -492,7 +520,7 @@ Validator.isMessages = (messages) => {
  * @param {MessageSearch} searchObj MessageSearch object
  * @returns {Boolean} result
  */
-Validator.isMessageSearch = searchObj => (typeof searchObj === 'object' && searchObj.roomId);
+Validator.isMessageSearch = searchObj => (typeof searchObj === 'object' &amp;&amp; searchObj.roomId);
 
 /**
  * @description Validate Webex Organization Object.
@@ -502,7 +530,7 @@ Validator.isMessageSearch = searchObj => (typeof searchObj === 'object' && searc
  * @param {Organization} organization Organization object
  * @returns {Boolean} result
  */
-Validator.isOrganization = organization => (typeof organization === 'object' && organization.id && organization.displayName);
+Validator.isOrganization = organization => (typeof organization === 'object' &amp;&amp; organization.id &amp;&amp; organization.displayName);
 
 /**
  * @description Validate Webex Organizations Objects in Array.
@@ -529,10 +557,10 @@ Validator.isOrganizations = (organizations) => {
  */
 Validator.isPerson = (person) => {
   const result = (typeof person === 'object'
-    && person.displayName
-    && person.firstName
-    && person.lastName
-    && person.emails
+    &amp;&amp; person.displayName
+    &amp;&amp; person.firstName
+    &amp;&amp; person.lastName
+    &amp;&amp; person.emails
   );
   return result;
 };
@@ -547,9 +575,9 @@ Validator.isPerson = (person) => {
  */
 Validator.personIsBot = (person) => {
   const result = (typeof person === 'object'
-    && person.displayName
-    && person.emails
-    && (person.type === 'bot')
+    &amp;&amp; person.displayName
+    &amp;&amp; person.emails
+    &amp;&amp; (person.type === 'bot')
   );
   return result;
 };
@@ -578,7 +606,7 @@ Validator.isPeople = (people) => {
  */
 Validator.isPersonSearch = (searchObj) => {
   const result = (typeof searchObj === 'object'
-    && (searchObj.id || searchObj.displayName || searchObj.email)
+    &amp;&amp; (searchObj.id || searchObj.displayName || searchObj.email)
   );
   return result;
 };
@@ -593,8 +621,8 @@ Validator.isPersonSearch = (searchObj) => {
  */
 Validator.isRole = (role) => {
   const result = (typeof role === 'object'
-    && role.id
-    && role.name
+    &amp;&amp; role.id
+    &amp;&amp; role.name
   );
   return result;
 };
@@ -624,9 +652,9 @@ Validator.isRoles = (roles) => {
  */
 Validator.isRoom = (room) => {
   const result = (typeof room === 'object'
-    && room.id
-    && _.has(room, 'title')
-    && room.type
+    &amp;&amp; room.id
+    &amp;&amp; _.has(room, 'title')
+    &amp;&amp; room.type
   );
   return result;
 };
@@ -656,7 +684,7 @@ Validator.isRooms = (rooms) => {
  */
 Validator.isRoomSearch = (searchObj) => {
   const result = (typeof searchObj === 'object'
-    && (searchObj.teamId || searchObj.type)
+    &amp;&amp; (searchObj.teamId || searchObj.type)
   );
   return result;
 };
@@ -671,9 +699,9 @@ Validator.isRoomSearch = (searchObj) => {
  */
 Validator.isTeam = (team) => {
   if (team instanceof Array) {
-    return (typeof team[0] === 'object' && team[0].id && team[0].name);
+    return (typeof team[0] === 'object' &amp;&amp; team[0].id &amp;&amp; team[0].name);
   }
-  return (typeof team === 'object' && team.id && team.name);
+  return (typeof team === 'object' &amp;&amp; team.id &amp;&amp; team.name);
 };
 
 /**
@@ -701,10 +729,10 @@ Validator.isTeams = (teams) => {
  */
 Validator.isTeamMembership = (teamMembership) => {
   const result = (typeof teamMembership === 'object'
-    && teamMembership.teamId
-    && teamMembership.personId
-    && teamMembership.personEmail
-    && validator.isEmail(teamMembership.personEmail)
+    &amp;&amp; teamMembership.teamId
+    &amp;&amp; teamMembership.personId
+    &amp;&amp; teamMembership.personEmail
+    &amp;&amp; validator.isEmail(teamMembership.personEmail)
   );
   return result;
 };
@@ -752,10 +780,10 @@ Validator.isTeamMembershipSearch = (searchObj) => {
  */
 Validator.isWebhook = (webhook) => {
   const result = (typeof webhook === 'object'
-    && webhook.name
-    && webhook.targetUrl
-    && webhook.resource
-    && webhook.event
+    &amp;&amp; webhook.name
+    &amp;&amp; webhook.targetUrl
+    &amp;&amp; webhook.resource
+    &amp;&amp; webhook.event
   );
   return result;
 };
@@ -814,3 +842,26 @@ Validator.objIsEqual = (obj1, obj2) => {
   return true;
 };
 module.exports = Validator;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a></li><li><a href="Framework.html">Framework</a></li><li><a href="Trigger.html">Trigger</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:botAddedAsModerator">botAddedAsModerator</a></li><li><a href="global.html#event:botRemovedAsModerator">botRemovedAsModerator</a></li><li><a href="global.html#event:despawn">despawn</a></li><li><a href="global.html#event:files">files</a></li><li><a href="global.html#event:initialized">initialized</a></li><li><a href="global.html#event:log">log</a></li><li><a href="global.html#event:memberAddedAsModerator">memberAddedAsModerator</a></li><li><a href="global.html#event:memberEnters">memberEnters</a></li><li><a href="global.html#event:memberExits">memberExits</a></li><li><a href="global.html#event:memberRemovedAsModerator">memberRemovedAsModerator</a></li><li><a href="global.html#event:mentioned">mentioned</a></li><li><a href="global.html#event:message">message</a></li><li><a href="global.html#event:roomLocked">roomLocked</a></li><li><a href="global.html#event:roomRenamed">roomRenamed</a></li><li><a href="global.html#event:roomUnocked">roomUnocked</a></li><li><a href="global.html#event:spawn">spawn</a></li><li><a href="global.html#event:start">start</a></li><li><a href="global.html#event:stop">stop</a></li></ul><h3>Global</h3><ul><li><a href="global.html#findInvalidMemberDomains">findInvalidMemberDomains</a></li><li><a href="global.html#generateDespawn">generateDespawn</a></li><li><a href="global.html#generateSpawn">generateSpawn</a></li><li><a href="global.html#getMemberships">getMemberships</a></li><li><a href="global.html#getPersonEmail">getPersonEmail</a></li><li><a href="global.html#guideRequirementsAreMet">guideRequirementsAreMet</a></li><li><a href="global.html#isDomainAllowed">isDomainAllowed</a></li><li><a href="global.html#swallowSpawn">swallowSpawn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 08 2022 16:54:18 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
