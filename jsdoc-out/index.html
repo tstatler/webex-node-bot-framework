@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h2>Overview</h2>
+<p>The framework provides developers with some basic scaffolding to quickly get a bot up and running.  Once a <a href="Framework.html"><code>framework</code></a> object is created with a configuration that includes a bot token, calling the <a href="Framework.html#start"><code>framework.start()</code></a> method kicks of the setup of this scaffolding.   The framework registers for all Webex Teams events, and may discover existing Webex Teams spaces that the bot is already a member of.</p>
+<p>A <code>bot</code> object is created for each space, and the framework generates a <code>spawn</code> event each time it finds a new one.  When all existing bot objects are created the framework generates an <code>initialized</code> event signalling that it is ready to begin &quot;listening&quot; for user input.</p>
+<p>The  class.</p>
+<pre class="prettyprint source lang-js"><code>// init framework
+var framework = new Framework(config);
+framework.start();
+
+// An initialized event means your webhooks are all registered and the 
+// framework has created bot objects for the spaces your bot was found in
+framework.on(&quot;initialized&quot;, function () {
+  framework.debug(&quot;Framework initialized successfully! [Press CTRL-C to quit]&quot;);
+});
+
+// A spawn event is generated when the framework finds a space with your bot in it
+// You can use the bot object to send messages to that space
+// The id field is the id of the framework
+// If addedBy is set, it means that a user has added your bot to a new space
+// Otherwise, this bot was in the space before this server instance started
+framework.on('spawn', function (bot, id, addedBy) {
+  if (!addedBy) {
+    // don't say anything here or your bot's spaces will get 
+    // spammed every time your server is restarted
+    framework.debug(`Framework created an object for an existing bot in a space called: ${bot.room.title}`);
+  } else {
+    // addedBy is the ID of the user who just added our bot to a new space, 
+    // Say hello, and tell users what you do!
+    bot.say('Hi there, you can say hello to me.  Don\'t forget you need to mention me in a group space!');
+  }
+});
+</code></pre>
+<p>Most of the framework's functionality is based around the <code>framework.hears()</code> function. This
+defines the phrase or pattern the bot is listening for and what actions to take
+when that phrase or pattern is matched. The <code>framework.hears()</code> function gets a callback
+that includes three objects: the bot object, and the trigger object, and the id of the framework.</p>
+<p>The bot object is a specific instance of the <code>bot</code> class associated with the Webex Teams space that triggered the <code>framework.hears()</code> call.<br>
+The <code>trigger</code> object provides details about the message that was sent, and the person who sent it, which caused the <code>framework.hears()</code> function to be triggered.</p>
+<p>A simple example of a framework.hears() function setup:</p>
+<pre class="prettyprint source lang-js"><code>framework.hears(phrase, function(bot, trigger, id) {
+  bot.&lt;command>
+    .then(function(returnedValue) {
+      // do something with returned value
+    })
+    .catch(function(err) {
+      // handle errors
+    });
+});
+</code></pre>
+<ul>
+<li><code>phrase</code> : This can be either a string or a regex pattern.
+If a string, the string is matched against the first word in the room message.
+message.
+If a regex pattern is used, it is matched against the entire message text.</li>
+<li><code>bot</code> : The bot object that is used to execute commands when the <code>phrase</code> is
+triggered.</li>
+<li><code>bot.&lt;command&gt;</code> : The Bot method to execute.</li>
+<li><code>then</code> : Node JS Promise keyword that invokes additional logic once the
+previous command is executed.</li>
+<li><code>catch</code> : handle errors that happen at either the original command or in any
+of the chained 'then' functions.</li>
+<li><code>trigger</code> : The object that describes the details around what triggered the
+<code>phrase</code>.</li>
+<li><code>commands</code> : The commands that are ran when the <code>phrase</code> is heard.</li>
+</ul>
+<h2>Authentication</h2>
+<p>The token used to authenticate the Framework with the Webex API is passed as part of the
+options used when instantiating the Framework class. To change or update the
+token, use the Framework#setWebexToken() method.</p>
+<p><strong>Example:</strong></p>
+<pre class="prettyprint source lang-js"><code>var newToken = 'Tm90aGluZyB0byBzZWUgaGVyZS4uLiBNb3ZlIGFsb25nLi4u';
+
+framework.setWebexToken(newToken)
+.then(function(token) {
+  console.log('token updated to: ' + token);
+});
+</code></pre>
+<h2>Storage</h2>
+<p>The storage system used in the framework is a simple key/value store and resolves around these 3 methods:</p>
+<ul>
+<li><code>bot.store(key, value)</code> - Store a value to a bot instance where 'key' is a
+string and 'value' is a boolean, number, string, array, or object. <em>This does
+not not support functions or any non serializable data.</em> Returns the a promise
+with the value.</li>
+<li><code>bot.recall(key)</code> - Recall a value by 'key' from a bot instance. Returns a
+resolved promise with the value or a rejected promise if not found.</li>
+<li><code>bot.forget([key])</code> - Forget (remove) value(s) from a bot instance where 'key'
+is an optional property that when defined, removes the specific key, and when
+undefined, removes all keys. Returns a resolved promise if deleted or not found.</li>
+</ul>
+<p>When a bot is first spawned, the framework calls the <code>bot.initStorage</code> method which attepts to load any previously existing bot storage elements (if using a persistent storage driver such as <a href="#MongoStore">MongoStore</a>), or will create an optional initial set of key/value pairs that were specified in the framework's configuration options <code>initBotStorageData</code> element.   If this is not set, new bots start off with no key/value pairs until <code>bot.store()</code> is called.</p>
+<p>When a bot despawns (is removed from a space), the key/value store for that bot
+instance will automatically be removed from the store. Framework currently has an
+in-memory store and a mongo based store. By default, the in-memory store is
+used. Other backend stores are possible by replicating any one of the built-in
+storage modules and passing it to the <code>framework.storeageDriver()</code> method.</p>
+<p>The <a href="#MongoStore">MongoStore</a> (and potentially other stores that use a persistent storage mechanism), also support the following methods:</p>
+<ul>
+<li><code>initialize()</code> -- this must be called before <code>framework.storageDriver()</code> and <code>framework.start()</code> are called, and will validate that the configuration is correct</li>
+<li><code>writeMetrics()</code> -- is a new, optional, method for persistent storage adaptors that can be called to write breadcrumbs into the database that can be used to build reports on the bot's usage</li>
+</ul>
+<p>See <a href="#MongoStore">MongoStore</a>, for details on how to configure this storage adaptor.</p>
+<p>The redis adaptor is likely broken and needs to be updated to support the new functions.   It would be great if a flint user of redis wanted to <a href="./contributing.md">contribute</a>!</p>
+<h2>Bot Accounts</h2>
+<p><strong>When using &quot;Bot Accounts&quot; the major differences are:</strong></p>
+<ul>
+<li>Webhooks for message:created only trigger when the Bot is mentioned by name</li>
+<li>Unable to read messages in rooms using the Webex API</li>
+</ul>
+<p><strong>Differences with trigger.args using Framework with a &quot;Bot Account&quot;:</strong></p>
+<p>The trigger.args array is a shortcut in processing the trigger.text string. It
+consists of an array of the words that are in the trigger.message string split
+by one or more spaces. Punctation is included if there is no space between the
+symbol and the word. With bot accounts, this behaves a bit differently.</p>
+<ul>
+<li>
+<p>If defining a <code>framework.hears()</code> using a string (not regex), <code>trigger.args</code> is a
+filtered array of words from the message that begins <em>after</em> the first match of
+bot mention.</p>
+</li>
+<li>
+<p>If defining a framework.hears() using regex, the trigger.args array is the entire
+message.</p>
+</li>
+</ul>
+<h2>Troubleshooting</h2>
+<p>A common complaint from new framework developers is &quot;My bot is not responding to  messages!&quot;.  If this is happening to you, here are a few things to check:</p>
+<ol>
+<li>Make sure you have configured your app with the token that belongs to the bot you are sending messages to.</li>
+<li>Make sure your framework based app is up and running.</li>
+<li>If using webhooks, make sure that your Webhook URL is reachable from the public internet.  If you aren't sure how to test this, remove the <code>webhookUrl</code> key from your framework config object.   This will use websockets which are more likely to work in development configurations.</li>
+<li>If interacting with a bot in a group space, make sure to at-mention your bot when you send it a message.  Only messages that specifically at-mention a bot by name are sent to the bot logic.</li>
+</ol>
+<p>If you are having intermittent problems with your bot failing to respond to messages this may be a problem with the Webex services itself, a problem with the framework, or a problem with the way you have configured your <code>framework.hears(...)</code> methods.   One way to isolate the problem is to add a handler for the internal framework log events, as follows</p>
+<pre class="prettyprint source lang-javascript"><code>framework.on('log', (msg) => {
+  console.log(msg);
+});
+</code></pre>
+<p>This will cause your app to include framework logging which provides details about every message received, and every <code>framework.hears()</code> handler that is invoked in response to those messages.   If you don't see the message you are sending to your bot, contact Webex developer support.  If you do see the message, check the logs to validate that your <code>framework.hears()</code> handler is being called.   You may need to modify the phrase. See the <a href="#Framework+hears">framework.hears documentation</a></p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a></li><li><a href="Framework.html">Framework</a></li><li><a href="Trigger.html">Trigger</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:botAddedAsModerator">botAddedAsModerator</a></li><li><a href="global.html#event:botRemovedAsModerator">botRemovedAsModerator</a></li><li><a href="global.html#event:despawn">despawn</a></li><li><a href="global.html#event:files">files</a></li><li><a href="global.html#event:initialized">initialized</a></li><li><a href="global.html#event:log">log</a></li><li><a href="global.html#event:memberAddedAsModerator">memberAddedAsModerator</a></li><li><a href="global.html#event:memberEnters">memberEnters</a></li><li><a href="global.html#event:memberExits">memberExits</a></li><li><a href="global.html#event:memberRemovedAsModerator">memberRemovedAsModerator</a></li><li><a href="global.html#event:mentioned">mentioned</a></li><li><a href="global.html#event:message">message</a></li><li><a href="global.html#event:roomLocked">roomLocked</a></li><li><a href="global.html#event:roomRenamed">roomRenamed</a></li><li><a href="global.html#event:roomUnocked">roomUnocked</a></li><li><a href="global.html#event:spawn">spawn</a></li><li><a href="global.html#event:start">start</a></li><li><a href="global.html#event:stop">stop</a></li></ul><h3>Global</h3><ul><li><a href="global.html#findInvalidMemberDomains">findInvalidMemberDomains</a></li><li><a href="global.html#generateDespawn">generateDespawn</a></li><li><a href="global.html#generateSpawn">generateSpawn</a></li><li><a href="global.html#getMemberships">getMemberships</a></li><li><a href="global.html#getPersonEmail">getPersonEmail</a></li><li><a href="global.html#guideRequirementsAreMet">guideRequirementsAreMet</a></li><li><a href="global.html#isDomainAllowed">isDomainAllowed</a></li><li><a href="global.html#swallowSpawn">swallowSpawn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 08 2022 16:41:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

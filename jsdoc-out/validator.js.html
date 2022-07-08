@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: validator.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: validator.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const validator = require('validator');
+const when = require('when');
+const fs = require('fs');
+const _ = require('lodash');
+
+/**
+ * @description Framework Object Validation
+ * @private
+ * @name Validator
+ * @namespace Validator
+ */
+const Validator = {};
+
+/**
+ * @description Validate an initialized framework object
+ *
+ * @function
+ * @memberof Validator
+ * @param {object} framework A Framework object
+ * @returns {boolean} If framework object is valid
+ */
+Validator.isFramework = (framework) => {
+  const result = (typeof framework === 'object'
+    &amp;&amp; (typeof framework.id === 'string')
+    &amp;&amp; (typeof framework.active === 'boolean')
+    &amp;&amp; (typeof framework.initialized === 'boolean')
+    &amp;&amp; (typeof framework.isBotAccount === 'boolean')
+    &amp;&amp; (typeof framework.isUserAccount === 'boolean')
+    &amp;&amp; (typeof framework.options === 'object')
+    &amp;&amp; (typeof framework.person === 'object')
+    &amp;&amp; (typeof framework.email === 'string')
+    &amp;&amp; (typeof framework.webex === 'object')
+    &amp;&amp; (typeof framework.bots === 'object')
+  );
+  return result;
+};
+
+/**
+ * @description Validate a bot object
+ *
+ * @function
+ * @memberof Validator
+ * @param {object} bot A Bot object
+ * @returns {boolean} If bot object is valid
+ */
+Validator.isBot = (bot) => {
+  const result = (typeof bot === 'object'
+    &amp;&amp; (typeof bot.id === 'string')
+    &amp;&amp; (typeof bot.email === 'string')
+    &amp;&amp; (typeof bot.framework === 'object')
+    &amp;&amp; (typeof bot.isDirect === 'boolean')
+    &amp;&amp; (typeof bot.isGroup === 'boolean')
+    &amp;&amp; (typeof bot.isLocked === 'boolean')
+    &amp;&amp; (typeof bot.isModerator === 'boolean')
+    &amp;&amp; (typeof bot.lastActivity === 'string')
+    &amp;&amp; (typeof bot.membership === 'object')
+    &amp;&amp; (typeof bot.options === 'object')
+    &amp;&amp; (typeof bot.person === 'object')
+    &amp;&amp; (typeof bot.room === 'object')
+  );
+  return result;
+};
+
+/**
+ * @description Validate a trigger object
+ *
+ * @function
+ * @memberof Validator
+ * @param {object} trigger A Trigger object
+ * @returns {boolean} If trigger object is valid
+ */
+Validator.isTrigger = (trigger) => {
+  let result = (typeof trigger === 'object'
+    &amp;&amp; (typeof trigger.id === 'string')
+    &amp;&amp; (typeof trigger.person === 'object')
+    &amp;&amp; (typeof trigger.personId === 'string')
+    &amp;&amp; (typeof trigger.type === 'string')
+  );
+  if (result) {
+    if (trigger.type === 'message') {
+      result = (typeof trigger.message === 'object'
+        &amp;&amp; (typeof trigger.args === 'object')
+        &amp;&amp; (typeof trigger.text === 'string')
+      );
+    } else if (trigger.type === 'attachmentAction') {
+      result = (typeof trigger.attachmentAction === 'object');
+    } else {
+      result = false;
+    }
+  }
+  return result;
+};
+
+/**
+ * @description Validate an attachmentAction object
+ *
+ * @function
+ * @memberof Validator
+ * @param {object} attachmentAction A attachmentAction object
+ * @returns {boolean} If attachmentAction object is valid
+ */
+Validator.isAttachmentAction = (attachmentAction) => {
+  let result = (typeof attachmentAction === 'object'
+    &amp;&amp; (typeof attachmentAction.created === 'string')
+    &amp;&amp; (typeof attachmentAction.id === 'string')
+    &amp;&amp; (typeof attachmentAction.inputs === 'object')
+    &amp;&amp; (typeof attachmentAction.messageId === 'string')
+    &amp;&amp; (typeof attachmentAction.personId === 'string')
+    &amp;&amp; (typeof attachmentAction.roomId === 'string')
+    &amp;&amp; (typeof attachmentAction.type === 'string')
+  );
+  return result;
+};
+
+/**
+ * @description Validate a cardJson object
+ *
+ * @function
+ * @memberof Validator
+ * @param {object} cardJson A Webex Buttons and Cards JSON object
+ * @returns {boolean} If card JSON object is valid
+ */
+Validator.isCardJson = (cardJson) => {
+  let result = (typeof cardJson === 'object'
+    // &amp;&amp; (typeof cardJson.$schema === 'string')
+    // &amp;&amp; (cardJson.$schema === 'http://adaptivecards.io/schemas/adaptive-card.json')
+    &amp;&amp; (typeof cardJson.type === 'string')
+    &amp;&amp; (cardJson.type === 'AdaptiveCard')
+    &amp;&amp; (typeof cardJson.version === 'string')
+    &amp;&amp; (typeof cardJson.body === 'object')
+  );
+  return result;
+};
+
+/**
+ * @description Validate filePath resolves to existing file. Returns fulfilled Promise with
+ * filePath if valid, else returns rejected Promise if not valid.
+ *
+ * @function
+ * @memberof Validator
+ * @param {String} filePath Absolute path to file
+ * @returns {Promise.String} Absolute path to file
+ */
+Validator.pathIsFile = (filePath) => {
+  return new Promise(function(resolve, reject) {
+    fs.stat(filePath, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.isFile()) {
+        return resolve(filePath);
+      }
+      return reject(new Error('file not found or is a reference to a directory'));
+    });
+  });
+};
+
+/**
+ * @description Validate filePath resolves to existing dir. Returns fulfilled Promise with
+ * dirPath if valid, else returns rejected Promise if not valid.
+ *
+ * @function
+ * @memberof Validator
+ * @param {String} dirPath Absolute path to a directory
+ * @returns {Promise.String} Absolute path to a directory
+ */
+Validator.isDir = (dirPath) => {
+  return new Promise(function(resolve, reject) {
+    fs.stat(dirPath, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.isDir()) {
+        return when(dirPath);
+      }
+      return when.reject(new Error('dir not found or is a reference to a file'));
+    });
+  });
+};
+
+/**
+ * @description Validate Webex Token is valid by sending request to API to determine if
+ * authorized. Returns fulfilled Promise with token if valid, else returns rejected
+ * Promise if not valid.
+ *
+ * @function
+ * @memberof Validator
+ * @param {String} token Cisco Webex Token
+ * @returns {Promise.String} Cisco Webex Token
+ */
+Validator.isToken = (token) => {
+  if (!token) {
+    return when.reject(new Error('invalid token'));
+  }
+  const Webex = require('webex'); // eslint-disable-line global-require
+  const webex = new Webex({ token });
+
+  return webex.personMe()
+    .then((person) => {
+      if (Validator.isPerson) {
+        return when(token);
+      }
+      return when.reject(new Error('invalid token'));
+    })
+    .catch(err => when.reject(new Error('invalid token')));
+};
+
+/**
+ * @description Validate String is Email.
+ *
+ * @function
+ * @memberof Validator
+ * @param {String} email Email address string
+ * @returns {Boolean} result
+ */
+Validator.isEmail = (email) => {
+  if (typeof email !== 'string') {
+    return false;
+  }
+
+  return validator.isEmail(email);
+};
+
+/**
+ * @description Validate Emails in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} emails Array of Email address string
+ * @returns {Boolean} result
+ */
+Validator.isEmails = (emails) => {
+  if (emails instanceof Array) {
+    return _.every(emails, Validator.isEmail);
+  }
+  return false;
+};
+
+/**
+ * @description Validate String is URL.
+ *
+ * @function
+ * @memberof Validator
+ * @param {String} url URL String
+ * @returns {Boolean} result
+ */
+Validator.isUrl = (url) => {
+  if (typeof url !== 'string') {
+    return false;
+  }
+  return validator.isURL(url, { protocols: ['http', 'https'], allow_underscores: true });
+};
+
+/**
+ * @description Validate String is File path and not a URL/URI.
+ *
+ * @function
+ * @memberof Validator
+ * @param {String} path String to test
+ * @returns {Boolean} result
+ */
+Validator.isFilePath = (path) => {
+  if (typeof path !== 'string') {
+    return false;
+  }
+  const re = /^(?!(.*:\/))(\/?)[ -~]*/;
+  return re.test(path);
+};
+
+/**
+ * @description Validate Options object
+ *
+ * @function
+ * @memberof Validator
+ * @param {Object.&lt;Options>} options Validate that object passed includes all
+ * valid options for framework constructor
+ * @returns {Boolean} result
+ */
+Validator.isOptions = options => (typeof options === 'object'); // TODO
+
+/**
+ * @description Validate File object
+ *
+ * @function
+ * @memberof Validator
+ * @param {Object.&lt;File>} file Validate that object passed includes all valid
+ * options required in a file object
+ * @returns {Boolean} result
+ */
+Validator.isFile = (file) => {
+  const result = (typeof file === 'object'
+    &amp;&amp; file.name
+    &amp;&amp; file.ext
+    &amp;&amp; file.type
+    &amp;&amp; file.binary
+    &amp;&amp; file.base64
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Event Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Event} event Event object
+ * @returns {Boolean} result
+ */
+Validator.isEvent = (event) => {
+  const result = (typeof event === 'object'
+    &amp;&amp; event.id
+    &amp;&amp; event.resource
+    &amp;&amp; event.type
+    &amp;&amp; event.actorId
+    &amp;&amp; event.created
+    &amp;&amp; event.data &amp;&amp; typeof event.data === 'object'
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Event Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} events Array of Event objects
+ * @returns {Boolean} result
+ */
+Validator.isEvents = (events) => {
+  if (events instanceof Array) {
+    return _.every(events, Validator.isEvent);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Event Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {EventSearch} searchObj EventSearch object
+ * @returns {Boolean} result
+ */
+Validator.isEventSearch = (searchObj) => {
+  if (typeof searchObj !== 'object') {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @description Validate Webex License Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {License} license License object
+ * @returns {Boolean} result
+ */
+Validator.isLicense = (license) => {
+  const result = (typeof license === 'object'
+    &amp;&amp; license.id
+    &amp;&amp; license.name
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex License Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} licenses Array of License objects
+ * @returns {Boolean} result
+ */
+Validator.isLicenses = (licenses) => {
+  if (licenses instanceof Array) {
+    return _.every(licenses, Validator.isLicense);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex License Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {LicenseSearch} searchObj LicenseSearch object
+ * @returns {Boolean} result
+ */
+Validator.isLicenseSearch = (searchObj) => {
+  if (typeof searchObj !== 'object') {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @description Validate Webex Membership Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Membership} membership Membership object
+ * @returns {Boolean} result
+ */
+Validator.isMembership = (membership) => {
+  const result = (typeof membership === 'object'
+    &amp;&amp; membership.roomId
+    &amp;&amp; membership.personId
+    &amp;&amp; membership.personEmail
+  );
+  return result;
+};
+
+
+
+/**
+ * @description Validate Webex Membership Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} memberships Array of Membership objects
+ * @returns {Boolean} result
+ */
+Validator.isMemberships = (memberships) => {
+  if (memberships instanceof Array) {
+    return _.every(memberships, Validator.isMembership);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Membership Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {MembershipSearch} searchObj MembershipSearch object
+ * @returns {Boolean} result
+ */
+Validator.isMembershipSearch = (searchObj) => {
+  if (typeof searchObj !== 'object') {
+    return false;
+  }
+
+  const searchByRoomId = (searchObj.roomId &amp;&amp; !searchObj.personId &amp;&amp; !searchObj.personEmail);
+  const searchByPersonId = (searchObj.roomId &amp;&amp; searchObj.personId);
+  const searchByPersonEmail = (searchObj.roomId &amp;&amp; searchObj.personEmail);
+
+  return (searchByRoomId || searchByPersonId || searchByPersonEmail);
+};
+
+/**
+ * @description Validate Webex Message Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Message} message Message object
+ * @returns {Boolean} result
+ */
+Validator.isMessage = (message) => {
+  if (typeof message !== 'object') {
+    return false;
+  }
+
+  const directMessage = (message.toPersonId || message.toPersonEmail);
+  const groupMessage = (!directMessage &amp;&amp; message.roomId);
+
+  const result = ((directMessage || groupMessage)
+    &amp;&amp; (message.text || message.markdown || message.files));
+  return result;
+};
+
+/**
+ * @description Validate Webex Message Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} messages Array of Message objects
+ * @returns {Boolean} result
+ */
+Validator.isMessages = (messages) => {
+  if (messages instanceof Array) {
+    return _.every(messages, Validator.isMessage);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Message Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {MessageSearch} searchObj MessageSearch object
+ * @returns {Boolean} result
+ */
+Validator.isMessageSearch = searchObj => (typeof searchObj === 'object' &amp;&amp; searchObj.roomId);
+
+/**
+ * @description Validate Webex Organization Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Organization} organization Organization object
+ * @returns {Boolean} result
+ */
+Validator.isOrganization = organization => (typeof organization === 'object' &amp;&amp; organization.id &amp;&amp; organization.displayName);
+
+/**
+ * @description Validate Webex Organizations Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} organizations Array of Organization objects
+ * @returns {Boolean} result
+ */
+Validator.isOrganizations = (organizations) => {
+  if (organizations instanceof Array) {
+    return _.every(organizations, Validator.isOrganization);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Person Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Person} person Person object
+ * @returns {Boolean} result
+ */
+Validator.isPerson = (person) => {
+  const result = (typeof person === 'object'
+    &amp;&amp; person.displayName
+    &amp;&amp; person.firstName
+    &amp;&amp; person.lastName
+    &amp;&amp; person.emails
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Person Object is a bot
+ *
+ * @function
+ * @memberof Validator
+ * @param {Person} person Person object
+ * @returns {Boolean} result
+ */
+Validator.personIsBot = (person) => {
+  const result = (typeof person === 'object'
+    &amp;&amp; person.displayName
+    &amp;&amp; person.emails
+    &amp;&amp; (person.type === 'bot')
+  );
+  return result;
+};
+/**
+ * @description Validate Webex Person Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} people Array of Person objects
+ * @returns {Boolean} result
+ */
+Validator.isPeople = (people) => {
+  if (people instanceof Array) {
+    return _.every(people, Validator.isPerson);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Person Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {PersonSearch} searchObj Person Search object
+ * @returns {Boolean} result
+ */
+Validator.isPersonSearch = (searchObj) => {
+  const result = (typeof searchObj === 'object'
+    &amp;&amp; (searchObj.id || searchObj.displayName || searchObj.email)
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Role Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Role} role Role object
+ * @returns {Boolean} result
+ */
+Validator.isRole = (role) => {
+  const result = (typeof role === 'object'
+    &amp;&amp; role.id
+    &amp;&amp; role.name
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Role Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} roles Array of Role objects
+ * @returns {Boolean} result
+ */
+Validator.isRoles = (roles) => {
+  if (roles instanceof Array) {
+    return _.every(roles, Validator.isRole);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Room Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Room} room Room Object
+ * @returns {Boolean} result
+ */
+Validator.isRoom = (room) => {
+  const result = (typeof room === 'object'
+    &amp;&amp; room.id
+    &amp;&amp; _.has(room, 'title')
+    &amp;&amp; room.type
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Room Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} rooms Array of Room objects
+ * @returns {Boolean} result
+ */
+Validator.isRooms = (rooms) => {
+  if (rooms instanceof Array) {
+    return _.every(rooms, Validator.isRoom);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Room Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {RoomSearch} searchObj RoomSearch object
+ * @returns {Boolean} result
+ */
+Validator.isRoomSearch = (searchObj) => {
+  const result = (typeof searchObj === 'object'
+    &amp;&amp; (searchObj.teamId || searchObj.type)
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Team Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Team} team Team object
+ * @returns {Boolean} result
+ */
+Validator.isTeam = (team) => {
+  if (team instanceof Array) {
+    return (typeof team[0] === 'object' &amp;&amp; team[0].id &amp;&amp; team[0].name);
+  }
+  return (typeof team === 'object' &amp;&amp; team.id &amp;&amp; team.name);
+};
+
+/**
+ * @description Validate Webex Team Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} teams Array of Team objects
+ * @returns {Boolean} result
+ */
+Validator.isTeams = (teams) => {
+  if (teams instanceof Array) {
+    return _.every(teams, Validator.isTeam);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Team Membership Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {TeamMembership} teamMembership TeamMembership object
+ * @returns {Boolean} result
+ */
+Validator.isTeamMembership = (teamMembership) => {
+  const result = (typeof teamMembership === 'object'
+    &amp;&amp; teamMembership.teamId
+    &amp;&amp; teamMembership.personId
+    &amp;&amp; teamMembership.personEmail
+    &amp;&amp; validator.isEmail(teamMembership.personEmail)
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Team Membership Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} teamMemberships Array of TeamMembership objects
+ * @returns {Boolean} result
+ */
+Validator.isTeamMemberships = (teamMemberships) => {
+  if (teamMemberships instanceof Array) {
+    return _.every(teamMemberships, Validator.isTeamMembership);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Team Memebership Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {TeamMembershipSearch} searchObj TeamMembership object
+ * @returns {Boolean} result
+ */
+Validator.isTeamMembershipSearch = (searchObj) => {
+  if (typeof searchObj !== 'object') {
+    return false;
+  }
+  if (!searchObj.teamId) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @description Validate Webex Webhook Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Webhook} webhook Webhook object
+ * @returns {Boolean} result
+ */
+Validator.isWebhook = (webhook) => {
+  const result = (typeof webhook === 'object'
+    &amp;&amp; webhook.name
+    &amp;&amp; webhook.targetUrl
+    &amp;&amp; webhook.resource
+    &amp;&amp; webhook.event
+  );
+  return result;
+};
+
+/**
+ * @description Validate Webex Webhook Objects in Array.
+ *
+ * @function
+ * @memberof Validator
+ * @param {Array} webhooks Array of Webhook objects
+ * @returns {Boolean} result
+ */
+Validator.isWebhooks = (webhooks) => {
+  if (webhooks instanceof Array) {
+    return _.every(webhooks, Validator.isWebhook);
+  }
+  return false;
+};
+
+/**
+ * @description Validate Webex Webhook Search Object.
+ *
+ * @function
+ * @memberof Validator
+ * @param {WebhookSearch} searchObj TeamMembership object
+ * @returns {Boolean} result
+ */
+Validator.isWebhookSearch = (searchObj) => {
+  if (typeof searchObj !== 'object') {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @description Validate that two ojbects are the same.
+ *
+ * @function
+ * @memberof Validator
+ * @param {obj} obj1 object
+ * @param {obj} obj2 object
+ * @returns {Boolean} result
+ */
+Validator.objIsEqual = (obj1, obj2) => {
+  if ((typeof obj1 !== 'object') || (typeof obj2 !== 'object')) {
+    return false;
+  }
+  for (let key of Object.keys(obj1)) {
+    // Don't go deep, ignore objects
+    if (typeof obj1[key] !== 'object') {
+      if (obj1[key] !== obj2[key]) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+module.exports = Validator;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a></li><li><a href="Framework.html">Framework</a></li><li><a href="Trigger.html">Trigger</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:botAddedAsModerator">botAddedAsModerator</a></li><li><a href="global.html#event:botRemovedAsModerator">botRemovedAsModerator</a></li><li><a href="global.html#event:despawn">despawn</a></li><li><a href="global.html#event:files">files</a></li><li><a href="global.html#event:initialized">initialized</a></li><li><a href="global.html#event:log">log</a></li><li><a href="global.html#event:memberAddedAsModerator">memberAddedAsModerator</a></li><li><a href="global.html#event:memberEnters">memberEnters</a></li><li><a href="global.html#event:memberExits">memberExits</a></li><li><a href="global.html#event:memberRemovedAsModerator">memberRemovedAsModerator</a></li><li><a href="global.html#event:mentioned">mentioned</a></li><li><a href="global.html#event:message">message</a></li><li><a href="global.html#event:roomLocked">roomLocked</a></li><li><a href="global.html#event:roomRenamed">roomRenamed</a></li><li><a href="global.html#event:roomUnocked">roomUnocked</a></li><li><a href="global.html#event:spawn">spawn</a></li><li><a href="global.html#event:start">start</a></li><li><a href="global.html#event:stop">stop</a></li></ul><h3>Global</h3><ul><li><a href="global.html#findInvalidMemberDomains">findInvalidMemberDomains</a></li><li><a href="global.html#generateDespawn">generateDespawn</a></li><li><a href="global.html#generateSpawn">generateSpawn</a></li><li><a href="global.html#getMemberships">getMemberships</a></li><li><a href="global.html#getPersonEmail">getPersonEmail</a></li><li><a href="global.html#guideRequirementsAreMet">guideRequirementsAreMet</a></li><li><a href="global.html#isDomainAllowed">isDomainAllowed</a></li><li><a href="global.html#swallowSpawn">swallowSpawn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 08 2022 16:41:24 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
