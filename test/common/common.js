@@ -249,7 +249,7 @@ module.exports = {
       this.frameworkMembershipCreatedHandler(testName, framework, eventsData, resolve);
     }));
     eventPromises.push(new Promise((resolve) => {
-      this.frameworkMemberEntersHandler(testName, framework, eventsData, resolve);
+      this.framework  Handler(testName, framework, eventsData, resolve);
     }));
     eventPromises.push(new Promise((resolve) => {
       bot.memberEntersHandler(testName, eventsData, resolve);

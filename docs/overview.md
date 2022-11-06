@@ -4,10 +4,7 @@ The framework provides developers with some basic scaffolding to quickly get a b
 
 A `bot` object is created for each space, and the framework generates a `spawn` event each time it finds a new one.  When all existing bot objects are created the framework generates an `initialized` event signalling that it is ready to begin "listening" for user input.
 
-The  class.
-
-
-```js
+```javascript
 // init framework
 var framework = new Framework(config);
 framework.start();
@@ -157,4 +154,4 @@ framework.on('log', (msg) => {
 });
 ```
 
-This will cause your app to include framework logging which provides details about every message received, and every `framework.hears()` handler that is invoked in response to those messages.   If you don't see the message you are sending to your bot, contact Webex developer support.  If you do see the message, check the logs to validate that your `framework.hears()` handler is being called.   You may need to modify the phrase. See the [framework.hears documentation](#Framework+hears)
+This will cause your app to include framework logging which provides details about every message received, and every {@link Framework#hears|framework.hears()} handler that is invoked in response to those messages.   If you don't see the message you are sending to your bot, contact Webex developer support.  If you do see the message, check the logs to validate that your {@link Framework#hears|framework.hears()} handler is being called.   You may need to modify the phrase. 
